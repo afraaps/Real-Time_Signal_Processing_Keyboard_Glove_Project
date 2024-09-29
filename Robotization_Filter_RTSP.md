@@ -3,15 +3,15 @@
 ![image](https://github.com/user-attachments/assets/ab3088c4-5650-4549-8125-4be790027ce6)
 
 #### Steps:
-##### * Open a audio stream to take in data
-##### * Read audio stream in blocks in a loop
-##### * Unpack the signal to alter the data (converting binary string to array_like time series of values)
-##### * stft() to get frequency information and change it in next step
-##### * abs() to remove negatives to implement the effect
-##### * istft() to turn data back into array like data that can be packed in the next step
-##### * Put through clipping to make sure the data does not exceed certain values/limits
-##### * Pack the data (back to binary string)
-##### * Output data to save/write to file
+##### Open a audio stream to take in data
+##### Read audio stream in blocks in a loop
+##### Unpack the signal to alter the data (converting binary string to array_like time series of values)
+##### stft() to get frequency information and change it in next step
+##### abs() to remove negatives to implement the effect
+##### istft() to turn data back into array like data that can be packed in the next step
+##### Put through clipping to make sure the data does not exceed certain values/limits
+##### Pack the data (back to binary string)
+##### Output data to save/write to file
 
 ***
 ###### FFT -> Fourier analysis converts a signal from its original domain (often time or space) to a representation in the frequency domain and vice versa.
