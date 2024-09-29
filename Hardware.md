@@ -1,4 +1,4 @@
-This project used a ESP32-WROOM-32 Microcontroller to obtain and send data from straing gauge sensors.
+This project used a ESP32-WROOM-32 microcontroller to obtain and send data from strain gauge sensors to the python code.
 ![image](https://github.com/user-attachments/assets/78232857-6a20-4d81-8848-1d14490d9743)
 
 [Link
