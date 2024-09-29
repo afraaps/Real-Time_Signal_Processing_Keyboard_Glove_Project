@@ -1,6 +1,7 @@
 ## Sections of Real Time Signal Processing Code in Python
 ***
 ### Playing Keyboard Sound
+#### To create the keyboard sound effects a second order infinite impulse response filter and clipping of the data was implemented. 
 #### Setting up second order IIR filter
 ![image](https://github.com/user-attachments/assets/5c887339-dfe8-442b-be74-51b86d22a6e3)
 
