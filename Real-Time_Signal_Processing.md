@@ -1,3 +1,5 @@
+### Playing Keyboard Sound
+***
 Sections of Real Time Signal Processing Code in Python
 The python code uses real time signal processing methods to record and create audio outputs for the signals given by the hardware I created to monitor hand movement. 
 
@@ -10,7 +12,6 @@ Methods in this code include a robotization filter using
 
 To create the keyboard sound effects a second order infinite impulse response filter and clipping of the data was implemented. 
 ***
-### Playing Keyboard Sound
 
 #### Setting up second order IIR filter
 ![image](https://github.com/user-attachments/assets/5c887339-dfe8-442b-be74-51b86d22a6e3)
