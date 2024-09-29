@@ -1,18 +1,6 @@
+## Sections of Real Time Signal Processing Code in Python
+***
 ### Playing Keyboard Sound
-***
-Sections of Real Time Signal Processing Code in Python
-The python code uses real time signal processing methods to record and create audio outputs for the signals given by the hardware I created to monitor hand movement. 
-
-Methods in this code include a robotization filter using
-  block processing of the signal
-  short time fourier transform of the data 
-  altering the data additionally 
-    using the abs() function to remove negative frequencies
-    Inverse short time fourier transform 
-
-To create the keyboard sound effects a second order infinite impulse response filter and clipping of the data was implemented. 
-***
-
 #### Setting up second order IIR filter
 ![image](https://github.com/user-attachments/assets/5c887339-dfe8-442b-be74-51b86d22a6e3)
 
@@ -31,7 +19,8 @@ Opening audio output stream so the audio can be created, stored and/or played
 
 #### Second order IIR filter
 ![image](https://github.com/user-attachments/assets/abf52ebf-a254-4ae1-8b24-d9c20bc8be4a)
-
+***
+***
 ### Robotization Filter
 ![image](https://github.com/user-attachments/assets/0644e009-2694-4793-aff8-a2c3050a2160)
 ![image](https://github.com/user-attachments/assets/ab3088c4-5650-4549-8125-4be790027ce6)
@@ -49,5 +38,5 @@ Opening audio output stream so the audio can be created, stored and/or played
 ###### FFT -> Fourier analysis converts a signal from its original domain (often time or space) to a representation in the frequency domain and vice versa.
 
 ###### SFFT -> a Fourier-related transform used to determine the frequency and phase content of local sections of a signal as it changes over time. It evaluates the Fourier transform over a short time window.
-
+***
 
