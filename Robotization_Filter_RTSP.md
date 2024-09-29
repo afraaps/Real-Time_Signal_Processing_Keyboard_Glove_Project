@@ -14,6 +14,6 @@
 ##### Output data to save/write to file
 
 ***
-###### FFT -> Fourier analysis converts a signal from its original domain (often time or space) to a representation in the frequency domain and vice versa.
+###### FFT: Fourier analysis converts a signal from its original domain (often time or space) to a representation in the frequency domain and vice versa.
 
-###### SFFT -> a Fourier-related transform used to determine the frequency and phase content of local sections of a signal as it changes over time. It evaluates the Fourier transform over a short time window.
+###### SFFT: a Fourier-related transform used to determine the frequency and phase content of local sections of a signal as it changes over time. It evaluates the Fourier transform over a short time window and is useful for real-time signal processing.
