@@ -1,6 +1,6 @@
-###### Note: The wifi implemetation is not mentioned in this repository, you can use which ever wifi protocol you prefer for this and then apply the following real time signal processing methods to your data.
+###### Note: The wifi implemetation is not mentioned in this repository, you can use which ever wifi protocol you prefer for this and then apply the following real time signal processing methods to your data. It would be best to set up the wifi protocol after the _Import libaries._ section.
 ***
-# Import libaries 
+# Import libaries.
     from scipy import signal
     from math import cos, pi, sin
     from re import M
@@ -12,7 +12,8 @@
     from matplotlib import pyplot as plt
 
 # Set up place to store data from hardware with wifi protocol
-##### We set up five string type lists to store the date here since 5 strain sensors for 5 fingers are used
+##### We set up five string type lists to store the date here since 5 strain sensors for 5 fingers are used, and the wifi protocol I used sends data in string type. Change this to what ever works best for your wifi protocol.
+
     global line
     global line2
     global line3
@@ -36,17 +37,18 @@
     MAXVALUE    = 2**15-1  # Maximum allowed output signal value (because WIDTH = 2)
 
 
-# filter order
+# Filter order and set up.
     ORDER = 2  
     states = np.zeros(ORDER)
-    x = np.zeros(BLOCKLEN)
     
+    x = np.zeros(BLOCKLEN)
     x2 = np.zeros(BLOCKLEN)
     x3 = np.zeros(BLOCKLEN)
     x4 = np.zeros(BLOCKLEN)
     x5 = np.zeros(BLOCKLEN)
 
-# Open the audio output stream
+# Open the audio output stream.
+###### specify low _frames_per_buffer_ to reduce latency
     p = pyaudio.PyAudio()
     PA_FORMAT = pyaudio.paInt16
     stream = p.open(
@@ -55,10 +57,9 @@
             rate        = RATE,
             input       = False,
             output      = True,
-            frames_per_buffer = 128*2*2)
-# specify low frames_per_buffer to reduce latency
+            frames_per_buffer = 128)
 
-##### Set up for GUI to exit program
+##### Set up for GUI to exit program.
     CONTINUE = True
     
     def fun_quit():
@@ -67,13 +68,12 @@
       CONTINUE = False
       sys.exit()
     
-    # Define TK root
     root = Tk.Tk()
     
     B_quit = Tk.Button(root, text = 'Quit', command = fun_quit)
     B_quit.pack()
 
-###### Max and Min for sensor data. For more complex hand gestures, set up more ranges of motions/data for each finger/sensor and correlate the filtering effects to them. As this repository is focused on the signal processing aspects the min and max is all that will be used. 
+###### _dpk_ and _pk_ are max and min values for the sensor data, respectively. For more complex hand gestures, set up more ranges of motions/data for each finger/sensor and correlate the filtering effects to them. As this repository is focused on the signal processing aspects the min and max is all that will be used here. 
     pk = str('0')
     dpk = str('4095')
     
@@ -95,20 +95,18 @@
     five = np.chararray((2, 1))
     five[:] = '-1'
     
-    
     global i
     i = 0
 ***
-# Microphone and audio details
+# Microphone and audio details.
     WIDTH       = 2         # Number of bytes per sample
     CHANNELS    = 1         # mono
     RATE        = 16000     # Sampling rate (frames/second)
-    DURATION    = 3         # duration of processing (seconds)
+    DURATION    = 3         # Duration of processing (seconds)
     
     N = DURATION * RATE     # N : Number of samples to process
 
 ### WRITE AND READ FILE 
-
     Fs = 16000
     f0 = 400000
     
@@ -122,7 +120,7 @@
     
     w1 = wave.open('Sound1.wav', 'w') #volume 38% to hear and play
     
-    w1.setnchannels(1)			# one channels 
+    w1.setnchannels(1)			# one channel
     w1.setsampwidth(2)			# two bytes per sample (16 bits per sample)
     w1.setframerate(Fs)			# samples per second
     
@@ -133,7 +131,7 @@
         input       = True,
         output      = True)
 ***
-    BLOCKLEN2 = 1024                         # block length of samples
+    BLOCKLEN2 = 1024                         # Block length of samples
     K = int( DURATION * RATE / BLOCKLEN2 )   # Number of blocks
     
     global save
@@ -141,7 +139,6 @@
 ***
     while CONTINUE:
         root.update()
-        #CONTINUE = False
         if line == dpk:
             if one[0] == sound: 
                 print("Record For Thumb")
@@ -158,7 +155,7 @@
             for j in range(K):
                 input_bytes1_ = stream1.read(BLOCKLEN2)
                 #input_bytes1_ = stream1.read(BLOCKLEN2, exception_on_overflow = False)
-                signal_block = struct.unpack('h' * BLOCKLEN2, input_bytes1_)  # Convert
+                signal_block = struct.unpack('h' * BLOCKLEN2, input_bytes1_)  # Convert and unpack
         
                 f, t, Zxx1 = signal.stft(signal_block, fs = 1024, nperseg = 512 )
                 Zxx = np.abs(Zxx1)
@@ -166,10 +163,8 @@
             
                 y0 = y.astype(int) 
                 output_value = np.clip(y0, -MAX, MAX)
-
                 output_bytes = struct.pack('h'* BLOCKLEN2, *y0)    # Convert output value to binary string 
                 stream1.write(output_bytes)                        # Write binary string to audio stream
-            
                 w1.writeframes(output_bytes)   
             print('* Done. 1')
             save = 0
