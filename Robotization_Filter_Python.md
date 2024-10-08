@@ -155,25 +155,24 @@
             for j in range(K):
                 input_bytes1_ = stream1.read(BLOCKLEN2)
                 #input_bytes1_ = stream1.read(BLOCKLEN2, exception_on_overflow = False)
-                signal_block = struct.unpack('h' * BLOCKLEN2, input_bytes1_)  # Convert and unpack
-        
+                signal_block = struct.unpack('h' * BLOCKLEN2, input_bytes1_)  # Convert and unpack tuple data
+                
                 f, t, Zxx1 = signal.stft(signal_block, fs = 1024, nperseg = 512 )
                 Zxx = np.abs(Zxx1)
                 t, y = signal.istft(Zxx, fs = 1024, nperseg = 512 )
             
                 y0 = y.astype(int) 
-                output_value = np.clip(y0, -MAX, MAX)
-                output_bytes = struct.pack('h'* BLOCKLEN2, *y0)    # Convert output value to binary string 
-                stream1.write(output_bytes)                        # Write binary string to audio stream
-                w1.writeframes(output_bytes)   
+                output_value = np.clip(y0, -MAX, MAX)              # Filters data in a manner similar to a bandpass filter
+                output_bytes = struct.pack('h'* BLOCKLEN2, *y0)    # Convert output value back to tuple 
+                stream1.write(output_bytes)                        # Write data to audio stream
+                w1.writeframes(output_bytes)                       # Write data to a wav file
             print('* Done. 1')
             save = 0
 ***
         print("...") 
     print('* Done Recording. ')
     save = 0
-    record = False
-    #CONTINUE = True
+    #CONTINUE = False
     
     stream1.stop_stream()
     stream1.close()
