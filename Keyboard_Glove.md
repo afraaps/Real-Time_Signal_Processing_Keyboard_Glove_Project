@@ -1,192 +1,201 @@
-from scipy import signal
-from math import cos, pi, sin
-from re import M
-import pyaudio, struct
-import tkinter as Tk  
+###### Note: The wifi implemetation is not mentioned in this repository, you can use which ever wifi protocol you prefer for this and then apply the following real time signal processing methods to your data. It would be best to set up the wifi protocol after the _Import libaries._ section.
+***
+# Import libaries.
+        from scipy import signal
+        from math import cos, pi, sin
+        from re import M
+        import pyaudio, struct
+        import tkinter as Tk  
+        
+        import wave
+        import numpy as np
+        from matplotlib import pyplot as plt
+        
+        import sys
+        import socket
 
-import wave
-import numpy as np
-from matplotlib import pyplot as plt
+***
+# Set up place to store data from hardware with wifi protocol
+##### We set up five string type lists to store the date here since 5 strain sensors for 5 fingers are used, and the wifi protocol I used sends data in string type. Change this to what ever works best for your wifi protocol.
 
-import sys
-import socket
+        global line
+        global line2
+        global line3
+        global line4
+        global line5
+        
+        line = ['-1']
+        line2 = ['-1']
+        line3 = ['-1']
+        line4 = ['-1']
+        line5 = ['-1']
+***
+# Keyboard Sound Setup 
+        DBscale = False
+        #DBscale = True
+        
+        BLOCKLEN    = 128      # Number of frames per block
+        WIDTH       = 2         # Bytes per sample
+        CHANNELS    = 1         # Mono
+        RATE        = 2000      # Frames per second
+        MAXVALUE = 2**15-1      # Maximum allowed output signal value (because WIDTH = 2)
 
+# To create the keyboard sound effects use a second order infinite impulse response (IIR) filter and clipping of the data was implemented.
+## Setting up second order IIR filter
+### Parameters
+#### I used piano frequecy notes, but you can change these to be at the desired frequency you prefer. [Link](https://en.wikipedia.org/wiki/Piano_key_frequencies) [Link] (https://homes.luddy.indiana.edu/donbyrd/Teach/MusicalPitchesTable.htm)
 
-################### WiFi ####################################
+### Note: For the wifi protocol I used this decay time was suffience, make sure to adjust this based on your data transmision rate from the microcontroller to your PC/python-code.
 
-global line
-global line2
-global line3
-global line4
-global line5
+        Ta = 0.020       # Decay time (seconds) 
+        f1 = 7902.133    # Frequency (Hz)
+        f2 = 7458.620    # Frequency (Hz)
+        f3 = 7040.000    # Frequency (Hz)
+        f4 = 6644.875    # Frequency (Hz)
+        f5 = 6271.927    # Frequency (Hz)
+        
+        f1_2 = 5919.911    # Frequency (Hz)
+        f2_2 = 5587.652    # Frequency (Hz)
+        f3_2 = 5274.041    # Frequency (Hz)
+        f4_2 = 4978.032    # Frequency (Hz)
+        f5_2 = 4698.636    # Frequency (Hz)
+        
+        f1_3 = 4434.922    # Frequency (Hz)
+        f2_3 = 4186.009    # Frequency (Hz)
+        f3_3 = 3951.066    # Frequency (Hz)
+        f4_3 = 3729.310    # Frequency (Hz)
+        f5_3 = 3520.000    # Frequency (Hz)
+        
+        f1_4 = 3322.438    # Frequency (Hz)
+        f2_4 = 3135.963    # Frequency (Hz)
+        f3_4 = 2959.955    # Frequency (Hz)
+        f4_4 = 2793.826    # Frequency (Hz)
+        f5_4 = 2637.020    # Frequency (Hz)
+        
+        f1_5 = 2489.016    # Frequency (Hz)
+        f2_5 = 2349.318    # Frequency (Hz)
+        f3_5 = 2217.461    # Frequency (Hz)
+        f4_5 = 2093.005    # Frequency (Hz)
+        f5_5 = 1975.533    # Frequency (Hz)
 
-line = ['-1']
-line2 = ['-1']
-line3 = ['-1']
-line4 = ['-1']
-line5 = ['-1']
-###########################################################
+# Pole radius and angle to be used to get filter coefficients.
+        r = 0.1**(1.0/(Ta*RATE))        
+        om1 = 2.0 * pi * float(f1)/RATE
+        om2 = 2.0 * pi * float(f2)/RATE
+        om3 = 2.0 * pi * float(f3)/RATE
+        om4 = 2.0 * pi * float(f4)/RATE
+        om5 = 2.0 * pi * float(f5)/RATE
+        
+        om1_2 = 2.0 * pi * float(f1_2)/RATE
+        om2_2 = 2.0 * pi * float(f2_2)/RATE
+        om3_2 = 2.0 * pi * float(f3_2)/RATE
+        om4_2 = 2.0 * pi * float(f4_2)/RATE
+        om5_2 = 2.0 * pi * float(f5_2)/RATE
+        
+        om1_3 = 2.0 * pi * float(f1_3)/RATE
+        om2_3 = 2.0 * pi * float(f2_3)/RATE
+        om3_3 = 2.0 * pi * float(f3_3)/RATE
+        om4_3 = 2.0 * pi * float(f4_3)/RATE
+        om5_3 = 2.0 * pi * float(f5_3)/RATE
+        
+        om1_4 = 2.0 * pi * float(f1_4)/RATE
+        om2_4 = 2.0 * pi * float(f2_4)/RATE
+        om3_4 = 2.0 * pi * float(f3_4)/RATE
+        om4_4 = 2.0 * pi * float(f4_4)/RATE
+        om5_4 = 2.0 * pi * float(f5_4)/RATE
+        
+        om1_5 = 2.0 * pi * float(f1_5)/RATE
+        om2_5 = 2.0 * pi * float(f2_5)/RATE
+        om3_5 = 2.0 * pi * float(f3_5)/RATE
+        om4_5 = 2.0 * pi * float(f4_5)/RATE
+        om5_5 = 2.0 * pi * float(f5_5)/RATE
 
-######################## Keyboard Sound Setup ############################
-DBscale = False
-#DBscale = True
-
-BLOCKLEN    = 64*2      # Number of frames per block
-WIDTH       = 2         # Bytes per sample
-CHANNELS    = 1         # Mono
-RATE        = 2000      # Frames per second
-MAXVALUE = 2**15-1      # Maximum allowed output signal value (because WIDTH = 2)
-
-# Parameters
-Ta = 0.020       # Decay time (seconds)
-f1 = 7902.133    # Frequency (Hz)
-f2 = 7458.620    # Frequency (Hz)
-f3 = 7040.000    # Frequency (Hz)
-f4 = 6644.875    # Frequency (Hz)
-f5 = 6271.927    # Frequency (Hz)
-
-f1_2 = 5919.911    # Frequency (Hz)
-f2_2 = 5587.652    # Frequency (Hz)
-f3_2 = 5274.041    # Frequency (Hz)
-f4_2 = 4978.032    # Frequency (Hz)
-f5_2 = 4698.636    # Frequency (Hz)
-
-f1_3 = 4434.922    # Frequency (Hz)
-f2_3 = 4186.009    # Frequency (Hz)
-f3_3 = 3951.066    # Frequency (Hz)
-f4_3 = 3729.310    # Frequency (Hz)
-f5_3 = 3520.000    # Frequency (Hz)
-
-f1_4 = 3322.438    # Frequency (Hz)
-f2_4 = 3135.963    # Frequency (Hz)
-f3_4 = 2959.955    # Frequency (Hz)
-f4_4 = 2793.826    # Frequency (Hz)
-f5_4 = 2637.020    # Frequency (Hz)
-
-f1_5 = 2489.016    # Frequency (Hz)
-f2_5 = 2349.318    # Frequency (Hz)
-f3_5 = 2217.461    # Frequency (Hz)
-f4_5 = 2093.005    # Frequency (Hz)
-f5_5 = 1975.533    # Frequency (Hz)
-
-# Pole radius and angle
-r = 0.1**(1.0/(Ta*RATE))       # 0.01 for 1 percent amplitude
-om1 = 2.0 * pi * float(f1)/RATE
-om2 = 2.0 * pi * float(f2)/RATE
-om3 = 2.0 * pi * float(f3)/RATE
-om4 = 2.0 * pi * float(f4)/RATE
-om5 = 2.0 * pi * float(f5)/RATE
-
-om1_2 = 2.0 * pi * float(f1_2)/RATE
-om2_2 = 2.0 * pi * float(f2_2)/RATE
-om3_2 = 2.0 * pi * float(f3_2)/RATE
-om4_2 = 2.0 * pi * float(f4_2)/RATE
-om5_2 = 2.0 * pi * float(f5_2)/RATE
-
-om1_3 = 2.0 * pi * float(f1_3)/RATE
-om2_3 = 2.0 * pi * float(f2_3)/RATE
-om3_3 = 2.0 * pi * float(f3_3)/RATE
-om4_3 = 2.0 * pi * float(f4_3)/RATE
-om5_3 = 2.0 * pi * float(f5_3)/RATE
-
-om1_4 = 2.0 * pi * float(f1_4)/RATE
-om2_4 = 2.0 * pi * float(f2_4)/RATE
-om3_4 = 2.0 * pi * float(f3_4)/RATE
-om4_4 = 2.0 * pi * float(f4_4)/RATE
-om5_4 = 2.0 * pi * float(f5_4)/RATE
-
-om1_5 = 2.0 * pi * float(f1_5)/RATE
-om2_5 = 2.0 * pi * float(f2_5)/RATE
-om3_5 = 2.0 * pi * float(f3_5)/RATE
-om4_5 = 2.0 * pi * float(f4_5)/RATE
-om5_5 = 2.0 * pi * float(f5_5)/RATE
-
-# Filter coefficients (second-order IIR)
-a = [1, -2*r*cos(om1), r**2]
-b = [r*sin(om1)]
-
-a2 = [1, -2*r*cos(om2), r**2]
-b2 = [r*sin(om2)]
-
-a3 = [1, -2*r*cos(om3), r**2]
-b3 = [r*sin(om3)]
-
-a4 = [1, -2*r*cos(om4), r**2]
-b4 = [r*sin(om4)]
-
-a5 = [1, -2*r*cos(om5), r**2]
-b5 = [r*sin(om5)]
-
-
-
-a_2 = [1, -2*r*cos(om1_2), r**2]
-b_2 = [r*sin(om1_2)]
-
-a2_2 = [1, -2*r*cos(om2_2), r**2]
-b2_2 = [r*sin(om2_2)]
-
-a3_2 = [1, -2*r*cos(om3_2), r**2]
-b3_2 = [r*sin(om3_2)]
-
-a4_2 = [1, -2*r*cos(om4_2), r**2]
-b4_2 = [r*sin(om4_2)]
-
-a5_2 = [1, -2*r*cos(om5_2), r**2]
-b5_2 = [r*sin(om5_2)]
-
-
-
-a_3 = [1, -2*r*cos(om1_3), r**2]
-b_3 = [r*sin(om1_3)]
-
-a2_3 = [1, -2*r*cos(om2_3), r**2]
-b2_3 = [r*sin(om2_3)]
-
-a3_3 = [1, -2*r*cos(om3_3), r**2]
-b3_3 = [r*sin(om3_3)]
-
-a4_3 = [1, -2*r*cos(om4_3), r**2]
-b4_3 = [r*sin(om4_3)]
-
-a5_3 = [1, -2*r*cos(om5_3), r**2]
-b5_3 = [r*sin(om5_3)]
-
-
-
-a_4 = [1, -2*r*cos(om1_4), r**2]
-b_4 = [r*sin(om1_4)]
-
-a2_4 = [1, -2*r*cos(om2_4), r**2]
-b2_4 = [r*sin(om2_4)]
-
-a3_4 = [1, -2*r*cos(om3_4), r**2]
-b3_4 = [r*sin(om3_4)]
-
-a4_4 = [1, -2*r*cos(om4_4), r**2]
-b4_4 = [r*sin(om4_4)]
-
-a5_4 = [1, -2*r*cos(om5_4), r**2]
-b5_4 = [r*sin(om5_4)]
-
-
-a_5 = [1, -2*r*cos(om1_5), r**2]
-b_5 = [r*sin(om1_5)]
-
-a2_5 = [1, -2*r*cos(om2_5), r**2]
-b2_5 = [r*sin(om2_5)]
-
-a3_5 = [1, -2*r*cos(om3_5), r**2]
-b3_5 = [r*sin(om3_5)]
-
-a4_5 = [1, -2*r*cos(om4_5), r**2]
-b4_5 = [r*sin(om4_5)]
-
-a5_5 = [1, -2*r*cos(om5_5), r**2]
-b5_5 = [r*sin(om5_5)]
-
+# Calculating the filter coefficients for second-order IIR filter.
+        a = [1, -2*r*cos(om1), r**2]
+        b = [r*sin(om1)]
+        
+        a2 = [1, -2*r*cos(om2), r**2]
+        b2 = [r*sin(om2)]
+        
+        a3 = [1, -2*r*cos(om3), r**2]
+        b3 = [r*sin(om3)]
+        
+        a4 = [1, -2*r*cos(om4), r**2]
+        b4 = [r*sin(om4)]
+        
+        a5 = [1, -2*r*cos(om5), r**2]
+        b5 = [r*sin(om5)]
+        
+        
+        
+        a_2 = [1, -2*r*cos(om1_2), r**2]
+        b_2 = [r*sin(om1_2)]
+        
+        a2_2 = [1, -2*r*cos(om2_2), r**2]
+        b2_2 = [r*sin(om2_2)]
+        
+        a3_2 = [1, -2*r*cos(om3_2), r**2]
+        b3_2 = [r*sin(om3_2)]
+        
+        a4_2 = [1, -2*r*cos(om4_2), r**2]
+        b4_2 = [r*sin(om4_2)]
+        
+        a5_2 = [1, -2*r*cos(om5_2), r**2]
+        b5_2 = [r*sin(om5_2)]
+        
+        
+        
+        a_3 = [1, -2*r*cos(om1_3), r**2]
+        b_3 = [r*sin(om1_3)]
+        
+        a2_3 = [1, -2*r*cos(om2_3), r**2]
+        b2_3 = [r*sin(om2_3)]
+        
+        a3_3 = [1, -2*r*cos(om3_3), r**2]
+        b3_3 = [r*sin(om3_3)]
+        
+        a4_3 = [1, -2*r*cos(om4_3), r**2]
+        b4_3 = [r*sin(om4_3)]
+        
+        a5_3 = [1, -2*r*cos(om5_3), r**2]
+        b5_3 = [r*sin(om5_3)]
+        
+        
+        
+        a_4 = [1, -2*r*cos(om1_4), r**2]
+        b_4 = [r*sin(om1_4)]
+        
+        a2_4 = [1, -2*r*cos(om2_4), r**2]
+        b2_4 = [r*sin(om2_4)]
+        
+        a3_4 = [1, -2*r*cos(om3_4), r**2]
+        b3_4 = [r*sin(om3_4)]
+        
+        a4_4 = [1, -2*r*cos(om4_4), r**2]
+        b4_4 = [r*sin(om4_4)]
+        
+        a5_4 = [1, -2*r*cos(om5_4), r**2]
+        b5_4 = [r*sin(om5_4)]
+        
+        
+        a_5 = [1, -2*r*cos(om1_5), r**2]
+        b_5 = [r*sin(om1_5)]
+        
+        a2_5 = [1, -2*r*cos(om2_5), r**2]
+        b2_5 = [r*sin(om2_5)]
+        
+        a3_5 = [1, -2*r*cos(om3_5), r**2]
+        b3_5 = [r*sin(om3_5)]
+        
+        a4_5 = [1, -2*r*cos(om4_5), r**2]
+        b4_5 = [r*sin(om4_5)]
+        
+        a5_5 = [1, -2*r*cos(om5_5), r**2]
+        b5_5 = [r*sin(om5_5)]
 
 
-# filter order
+
+# Filter order and set up.
 ORDER = 2  
 states = np.zeros(ORDER)
 x = np.zeros(BLOCKLEN)
@@ -197,6 +206,7 @@ x4 = np.zeros(BLOCKLEN)
 x5 = np.zeros(BLOCKLEN)
 
 # Open the audio output stream
+###### specify low _frames_per_buffer_ to reduce latency
 p = pyaudio.PyAudio()
 PA_FORMAT = pyaudio.paInt16
 stream = p.open(
@@ -207,121 +217,119 @@ stream = p.open(
         output      = True,
         frames_per_buffer = 128*2*2)
 
-# specify low frames_per_buffer to reduce latency
-
 CONTINUE = False
 KEYPRESS = False
 record = True
 newsound = False
 KEY = False
 
-# write function to be true or false for each finger
+# Write function to be true or false for each finger.
 
+### This function increases or decreases the frequency of the keys by a full octave. If pressed 12 times increases it to a full octave and the frequecy is doubled
+        def ch(event):                 #call back function
+            global change
+        
+            if event.char == 'n': 
+              change = change + 1      # increase frequency
+           
+            if event.char == 'b':
+              change = change - 1      # decrease frequency
+        
+            print('change')
+            print(change)
 
-  
+        change = 0
+        
+### This function allows you to play the keyboard sounds created here.  
+        def Key(): #call back function
+            global KEY
+            global record
+            global newsound
+            print('KEYBOARD')
+            KEY = True
+            #record   = False
+            #newsound = False
+            
+### This function allows you to record a new sound to play instead of the keyboard sounds created here. 
+        def rec(): #call back function
+            global KEY
+            global record
+            global newsound
+            print('record')
+            record   = True
+            newsound = False
+            KEY = False
+            
+### This function allows you to play the recorded new sound. 
 
-def ch(event): #call back function
-    global change
+        def newsound_fun():
+            global KEY
+            global record
+            global newsound
+            print('newsound')
+            #newsound = True
+            #record   = False
+            #KEY = False
 
-    # increases frequecy by a full octave 
-    # if pressed 12 times increases it to a full octave and the frequecy is doubled
-    if event.char == 'n': 
-      change = change + 1      # increase frequency
-   
-    if event.char == 'b':
-      change = change - 1      # decrease frequency
-
-    print('change')
-    print(change)
-
-change = 0
-
-def Key(): #call back function
-    global KEY
-    global record
-    global newsound
-    print('KEYBOARD')
-    KEY = True
-    #record   = False
-    #newsound = False
-    
-
-def rec(): #call back function
-    global KEY
-    global record
-    global newsound
-    print('record')
-    record   = True
-    newsound = False
-    KEY = False
-
-def newsound_fun():
-    global KEY
-    global record
-    global newsound
-    print('newsound')
-    #newsound = True
-    #record   = False
-    #KEY = False
-
-def fun_quit():
-  global CONTINUE
-  global record
-  global newsound
-  global KEY 
-  print('Good bye')
-  CONTINUE = False
-  record = False
-  newsound = False
-  KEY = False
-  sys.exit()
-
-# Define TK root
-root = Tk.Tk()
-root.bind("<Key>", ch) # binds key to GUI
-
-B_quit = Tk.Button(root, text = 'Quit', command = fun_quit)
-B_quit.pack()
-
-B_rec = Tk.Button(root, text = 'RECORD', command = rec)
-B_rec.pack()
-
-B_newsound = Tk.Button(root, text = 'New Sounds', command = newsound_fun)
-B_newsound.pack()
-
-B_KEY = Tk.Button(root, text = 'KEYBOARD', command = Key)
-B_KEY.pack()
-
-pk = str('0')
-dpk = str('4095')
-
-sound = [[b'0']]
-nsound = [[b'4']] 
-
-one = np.chararray((2, 1))
-one[:] = '-1'
-
-two = np.chararray((2, 1))
-two[:] = '-1'
-
-three = np.chararray((2, 1))
-three[:] = '-1'
-
-four = np.chararray((2, 1))
-four[:] = '-1'
-
-five = np.chararray((2, 1))
-five[:] = '-1'
-
-
-global i
-i = 0
-
-k1 = 0 
-k2 = 0 
-k3 = 0 
-k4 = 0 
-k5 = 0  
+### This function is to quickly quit the code.
+        def fun_quit():
+          global CONTINUE
+          global record
+          global newsound
+          global KEY 
+          print('Good bye')
+          CONTINUE = False
+          record = False
+          newsound = False
+          KEY = False
+          sys.exit()
+        
+        # Define TK root
+        root = Tk.Tk()
+        root.bind("<Key>", ch) # binds key to GUI
+        
+        B_quit = Tk.Button(root, text = 'Quit', command = fun_quit)
+        B_quit.pack()
+        
+        B_rec = Tk.Button(root, text = 'RECORD', command = rec)
+        B_rec.pack()
+        
+        B_newsound = Tk.Button(root, text = 'New Sounds', command = newsound_fun)
+        B_newsound.pack()
+        
+        B_KEY = Tk.Button(root, text = 'KEYBOARD', command = Key)
+        B_KEY.pack()
+        
+        pk = str('0')
+        dpk = str('4095')
+        
+        sound = [[b'0']]
+        nsound = [[b'4']] 
+        
+        one = np.chararray((2, 1))
+        one[:] = '-1'
+        
+        two = np.chararray((2, 1))
+        two[:] = '-1'
+        
+        three = np.chararray((2, 1))
+        three[:] = '-1'
+        
+        four = np.chararray((2, 1))
+        four[:] = '-1'
+        
+        five = np.chararray((2, 1))
+        five[:] = '-1'
+        
+        
+        global i
+        i = 0
+        
+        k1 = 0 
+        k2 = 0 
+        k3 = 0 
+        k4 = 0 
+        k5 = 0  
 
 
 ####################### REAL TIME ROBOT FROM MIC ###########################################
