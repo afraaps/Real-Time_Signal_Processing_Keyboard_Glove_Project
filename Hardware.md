@@ -8,3 +8,4 @@ This project used 5 thin film strain sensors. ![image](https://github.com/user-a
 [Link](https://www.digikey.com/en/products/detail/dfrobot/SEN0293/10136549?utm_adgroup=&utm_source=google&utm_medium=cpc&utm_campaign=PMax%20Shopping_Product_High%20ROAS%20Categories&utm_term=&utm_content=&utm_id=go_cmp-20222717502_adg-_ad-__dev-c_ext-_prd-10136549_sig-EAIaIQobChMIkvKT2aHpiAMVCkn_AR3KRACqEAQYASABEgKuMvD_BwE&gad_source=1&gclid=EAIaIQobChMIkvKT2aHpiAMVCkn_AR3KRACqEAQYASABEgKuMvD_BwE) [Link](https://www.adafruit.com/product/182)
 
 These components were assembled and soldered together (with resistors, header pins, etc.) and attatcked to a glove in the following format:
+![IMG_0180](https://github.com/user-attachments/assets/3e2d4a20-e358-4c6f-9b9b-a9edc6fe9fb4)
