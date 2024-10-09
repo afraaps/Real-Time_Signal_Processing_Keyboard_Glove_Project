@@ -4,10 +4,11 @@
 #### To create the keyboard sound effects a second order infinite impulse response filter and clipping of the data was implemented. 
 
 #### Setting up second order IIR filter
-![image](https://github.com/user-attachments/assets/5c887339-dfe8-442b-be74-51b86d22a6e3)
+![image](https://github.com/user-attachments/assets/7270562c-9469-4e08-bdfc-e20e87333142)
+![image](https://github.com/user-attachments/assets/1fa8693d-542e-4b4b-9368-cc8370099ec7)
 
 #### Getting the filter coefficients
-![image](https://github.com/user-attachments/assets/62b78268-fe98-4a74-abc5-6f10dedee140)
+![image](https://github.com/user-attachments/assets/aeaed3b2-f56b-4921-afe1-96748d90c463)
 
 ##### With the desired frequency from each key sound obtain the pole radius and angle (pole and zero information) to obtain the filter coefficients that will change the filter and therefore the data, based on the desired frequency
 
