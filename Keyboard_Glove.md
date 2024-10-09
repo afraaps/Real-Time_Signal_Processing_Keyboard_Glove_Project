@@ -1,4 +1,4 @@
-###### Note: The wifi implemetation is not mentioned in this repository, you can use which ever wifi protocol you prefer for this and then apply the following real time signal processing methods to your data. It would be best to set up the wifi protocol after the _Import libaries._ section.
+###### Note: The WIFI implemetation is not mentioned in this repository, you can use which ever wifi protocol you prefer for this and then apply the following real time signal processing methods to your data. It would be best to set up the wifi protocol after the _Import libaries._ section.
 ***
 # Import libaries.
         from scipy import signal
@@ -11,8 +11,11 @@
         import numpy as np
         from matplotlib import pyplot as plt
 ***
-# Set up place to store data from hardware with wifi protocol
-##### We set up five string type lists to store the date here since 5 strain sensors for 5 fingers are used, and the wifi protocol I used sends data in string type. Change this to what ever works best for your wifi protocol.
+### _Set up WIFI or BLE section of your code here to take reading from the microcontroller and sensors._
+***
+
+# Set up place to store data from hardware with WIFI protocol
+##### We set up five string type lists to store the date here since 5 strain sensors for 5 fingers are used, and the wifi protocol I used sends data in string type. Change this to what ever works best for your WIFI protocol.
 
         global line
         global line2
@@ -30,18 +33,18 @@
         DBscale = False
         #DBscale = True
         
-        BLOCKLEN    = 128      # Number of frames per block
+        BLOCKLEN    = 128       # Number of frames per block
         WIDTH       = 2         # Bytes per sample
         CHANNELS    = 1         # Mono
         RATE        = 2000      # Frames per second
-        MAXVALUE = 2**15-1      # Maximum allowed output signal value (because WIDTH = 2)
+        MAXVALUE    = 2**15-1   # Maximum allowed output signal value (because WIDTH = 2)
 
 # To create the keyboard sound effects use a second order infinite impulse response (IIR) filter and clipping of the data was implemented.
 ## Setting up second order IIR filter
 ### Parameters
 #### I used piano frequecy notes, but you can change these to be at the desired frequency you prefer. [Link](https://en.wikipedia.org/wiki/Piano_key_frequencies) [Link](https://homes.luddy.indiana.edu/donbyrd/Teach/MusicalPitchesTable.htm)
 
-### Note: For the wifi protocol I used this decay time was suffience, make sure to adjust this based on your data transmision rate from the microcontroller to your PC/python-code.
+### Note: For the WIFI protocol I used this decay time was suffience, make sure to adjust this based on your data transmision rate from the microcontroller to your PC/python-code.
         Ta = 0.020       # Decay time (seconds) 
 
 ### Five sets of keys.
@@ -79,9 +82,11 @@
 # Pole radius and angle to be used to get filter coefficients.
 ##### We use the desired frequency from each key sound obtain the pole radius and angle (pole and zero information) to obtain the filter coefficients that will change the filter and therefore the data/impulse, based on the desired frequency.
 
-##### Poles (a) and zeros (b) relate to the frequency response of a system.
 ###### Angle: (in radians) around the unit circle (from 0 to 2π) corresponds to angular frequency
 ###### Radius: (from 0 to ∞) corresponds to the strength of the pole or zero at that frequency
+
+##### Poles (a) and zeros (b) relate to the frequency response of a system.
+###### [Link](https://dspfirst.gatech.edu/chapters/08feedbac/demos/recur/index.html) [Link](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.lfilter.html)
 
         r = 0.1**(1.0/(Ta*RATE))        
         om1 = 2.0 * pi * float(f1)/RATE
@@ -114,7 +119,9 @@
         om4_5 = 2.0 * pi * float(f4_5)/RATE
         om5_5 = 2.0 * pi * float(f5_5)/RATE
 
-# Calculating the filter coefficients for second-order IIR filter.
+# Calculating the filter coefficients for second-order IIR filter. [Link](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.lfilter.html) 
+###### You should simulate transfer functions in Matlab to test the poles and zeros and make any adjustments. 
+
         a = [1, -2*r*cos(om1), r**2]
         b = [r*sin(om1)]
         
@@ -199,8 +206,8 @@
 # Filter order, store sound being created, and general set up.
         ORDER = 2  
         states = np.zeros(ORDER)
-        x = np.zeros(BLOCKLEN)
         
+        x = np.zeros(BLOCKLEN)
         x2 = np.zeros(BLOCKLEN)
         x3 = np.zeros(BLOCKLEN)
         x4 = np.zeros(BLOCKLEN)
