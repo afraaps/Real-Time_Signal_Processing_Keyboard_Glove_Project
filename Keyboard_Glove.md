@@ -10,10 +10,6 @@
         import wave
         import numpy as np
         from matplotlib import pyplot as plt
-        
-        import sys
-        import socket
-
 ***
 # Set up place to store data from hardware with wifi protocol
 ##### We set up five string type lists to store the date here since 5 strain sensors for 5 fingers are used, and the wifi protocol I used sends data in string type. Change this to what ever works best for your wifi protocol.
@@ -43,7 +39,7 @@
 # To create the keyboard sound effects use a second order infinite impulse response (IIR) filter and clipping of the data was implemented.
 ## Setting up second order IIR filter
 ### Parameters
-#### I used piano frequecy notes, but you can change these to be at the desired frequency you prefer. [Link](https://en.wikipedia.org/wiki/Piano_key_frequencies) [Link] (https://homes.luddy.indiana.edu/donbyrd/Teach/MusicalPitchesTable.htm)
+#### I used piano frequecy notes, but you can change these to be at the desired frequency you prefer. [Link](https://en.wikipedia.org/wiki/Piano_key_frequencies)  [Link}(https://homes.luddy.indiana.edu/donbyrd/Teach/MusicalPitchesTable.htm)
 
 ### Note: For the wifi protocol I used this decay time was suffience, make sure to adjust this based on your data transmision rate from the microcontroller to your PC/python-code.
 
@@ -312,11 +308,10 @@
                 change = 0
         
             if line == dpk:
-                if one[0] == sound:
-                    x[k1] = 10000.0
-                    print("Pinky")
-                    x = x
-        
+                x[k1] = 10000.0
+                print("Pinky")
+                x = x
+###### Changes between keysets/octaves.
             if change == 0:
                 a = a
                 b = b
@@ -361,10 +356,87 @@
             if change == 4:
                 a_5 = a2_5
                 b_5 = b2_5
+
+***
+            if line3 == dpk:
+                x3[0] = 10000.0
+                print("Middle")
+                x += x3
+        
+            if change == 0:
+                a = a3
+                b = b3
+        
+            if change == 1:
+                a_2 = a3_2
+                b_2 = b3_2
+        
+            if change == 2:
+                a_3 = a3_3
+                b_3 = b3_3
+        
+            if change == 3:
+                a_4 = a3_4
+                b_4 = b3_4
+            
+            if change == 4:
+                a_5 = a3_5
+                b_5 = b3_5
+***        
+            if line4 == dpk:
+                x4[0] = 10000.0
+                print("Index")
+                x += x4  
                 
+            if change == 0:
+                a = a4
+                b = b4
+        
+            if change == 1:
+                a_2 = a4_2
+                b_2 = b4_2
+        
+            if change == 2:
+                a_3 = a4_3
+                b_3 = b4_3
+        
+            if change == 3:
+                a_4 = a4_4
+                b_4 = b4_4
+        
+            if change == 4:
+                a_5 = a4_5
+                b_5 = b4_5
+***        
+            if line5 != pk:
+                x5[0] = 10000.0
+                print("Thump")
+                x += x5
+        
+            if change == 0:
+                a = a5
+                b = b5
+            
+            if change == 1:
+                a_2 = a5_2
+                b_2 = b5_2
+        
+            if change == 2:
+                a_3 = a5_3
+                b_3 = b5_3
+        
+            if change == 1:
+                a_4 = a5_4
+                b_4 = b5_4
+        
+            if change == 2:
+                a_5 = a5_5
+                b_5 = b5_5
+***        
 ### Apply filter to signal here. Second order IIR filter.
             [y, states] = signal.lfilter(b, a, x, zi = states)
-            y = np.clip(y.astype(int), -MAXVALUE, MAXVALUE)       # Filters data in a manner similar to a bandpass filter.
+###### Filters data in a manner similar to a bandpass filter.
+            y = np.clip(y.astype(int), -MAXVALUE, MAXVALUE)        
            
             [y_2, states] = signal.lfilter(b_2, a_2, x, zi = states)
             y_2 = np.clip(y.astype(int), -MAXVALUE, MAXVALUE)     
@@ -376,7 +448,8 @@
             y_4 = np.clip(y.astype(int), -MAXVALUE, MAXVALUE)     
             
             [y_5, states] = signal.lfilter(b_5, a_5, x, zi = states)
-            y_5 = np.clip(y.astype(int), -MAXVALUE, MAXVALUE)     
+            y_5 = np.clip(y.astype(int), -MAXVALUE, MAXVALUE)   
+***
 ###### Resets the values from sensor input here.
             x[0] = 0.0
             x2[0] = 0.0
