@@ -39,7 +39,7 @@
 # To create the keyboard sound effects use a second order infinite impulse response (IIR) filter and clipping of the data was implemented.
 ## Setting up second order IIR filter
 ### Parameters
-#### I used piano frequecy notes, but you can change these to be at the desired frequency you prefer. [Link](https://en.wikipedia.org/wiki/Piano_key_frequencies)  [Link}(https://homes.luddy.indiana.edu/donbyrd/Teach/MusicalPitchesTable.htm)
+#### I used piano frequecy notes, but you can change these to be at the desired frequency you prefer. [Link](https://en.wikipedia.org/wiki/Piano_key_frequencies) [Link](https://homes.luddy.indiana.edu/donbyrd/Teach/MusicalPitchesTable.htm)
 
 ### Note: For the wifi protocol I used this decay time was suffience, make sure to adjust this based on your data transmision rate from the microcontroller to your PC/python-code.
 
@@ -194,8 +194,6 @@
         
         a5_5 = [1, -2*r*cos(om5_5), r**2]
         b5_5 = [r*sin(om5_5)]
-
-
 
 # Filter order, store sound being created, and general set up.
         ORDER = 2  
