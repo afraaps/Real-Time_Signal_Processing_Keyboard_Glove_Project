@@ -42,32 +42,34 @@
 #### I used piano frequecy notes, but you can change these to be at the desired frequency you prefer. [Link](https://en.wikipedia.org/wiki/Piano_key_frequencies) [Link](https://homes.luddy.indiana.edu/donbyrd/Teach/MusicalPitchesTable.htm)
 
 ### Note: For the wifi protocol I used this decay time was suffience, make sure to adjust this based on your data transmision rate from the microcontroller to your PC/python-code.
-
         Ta = 0.020       # Decay time (seconds) 
+
+### Five sets of keys.
+## Set One:
         f1 = 7902.133    # Frequency (Hz)
         f2 = 7458.620    # Frequency (Hz)
         f3 = 7040.000    # Frequency (Hz)
         f4 = 6644.875    # Frequency (Hz)
         f5 = 6271.927    # Frequency (Hz)
-        
+ ## Set Two:       
         f1_2 = 5919.911    # Frequency (Hz)
         f2_2 = 5587.652    # Frequency (Hz)
         f3_2 = 5274.041    # Frequency (Hz)
         f4_2 = 4978.032    # Frequency (Hz)
         f5_2 = 4698.636    # Frequency (Hz)
-        
+## Set Three:        
         f1_3 = 4434.922    # Frequency (Hz)
         f2_3 = 4186.009    # Frequency (Hz)
         f3_3 = 3951.066    # Frequency (Hz)
         f4_3 = 3729.310    # Frequency (Hz)
         f5_3 = 3520.000    # Frequency (Hz)
-        
+## Set Four:        
         f1_4 = 3322.438    # Frequency (Hz)
         f2_4 = 3135.963    # Frequency (Hz)
         f3_4 = 2959.955    # Frequency (Hz)
         f4_4 = 2793.826    # Frequency (Hz)
         f5_4 = 2637.020    # Frequency (Hz)
-        
+ ## Set Five:      
         f1_5 = 2489.016    # Frequency (Hz)
         f2_5 = 2349.318    # Frequency (Hz)
         f3_5 = 2217.461    # Frequency (Hz)
@@ -77,7 +79,7 @@
 # Pole radius and angle to be used to get filter coefficients.
 ##### We use the desired frequency from each key sound obtain the pole radius and angle (pole and zero information) to obtain the filter coefficients that will change the filter and therefore the data/impulse, based on the desired frequency.
 
-##### Poles and zeros relate to the frequency response.
+##### Poles (a) and zeros (b) relate to the frequency response of a system.
 ###### Angle: (in radians) around the unit circle (from 0 to 2π) corresponds to angular frequency
 ###### Radius: (from 0 to ∞) corresponds to the strength of the pole or zero at that frequency
 
@@ -163,7 +165,6 @@
         b5_3 = [r*sin(om5_3)]
         
         
-        
         a_4 = [1, -2*r*cos(om1_4), r**2]
         b_4 = [r*sin(om1_4)]
         
@@ -217,7 +218,6 @@
                 output      = True,
                 frames_per_buffer = 128*2*2)
 ***
-
 ### WRITE AND READ FILE 
         Fs = 16000
         f0 = 400000
@@ -240,7 +240,7 @@
 ### Function is used to change the octaves of the keyboard 'keys' set.
         def ch(event):                 # call back function
             global change
-            if event.char == 'n':      # increases frequecy by a full octave | if pressed 12 times increases it to a full octave and the frequecy is doubled
+            if event.char == 'n':      # increases frequecy by a full octave
               change = change + 1      # increase frequency
             if event.char == 'b':
               change = change - 1      # decrease frequency
@@ -419,11 +419,11 @@
                 a_3 = a5_3
                 b_3 = b5_3
         
-            if change == 1:
+            if change == 3:
                 a_4 = a5_4
                 b_4 = b5_4
         
-            if change == 2:
+            if change == 4:
                 a_5 = a5_5
                 b_5 = b5_5
 ***        
