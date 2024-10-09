@@ -12,8 +12,8 @@
 ##### With the desired frequency from each key sound obtain the pole radius and angle (pole and zero information) to obtain the filter coefficients that will change the filter and therefore the data, based on the desired frequency
 
 ##### Poles and zeros relate to the frequency response.
-###### Angle -> (in radians) around the unit circle (from 0 to 2π) corresponds to angular frequency
-###### Radius -> (from 0 to ∞) corresponds to the strength of the pole or zero at that frequency
+###### Angle: (in radians) around the unit circle (from 0 to 2π) corresponds to angular frequency
+###### Radius: (from 0 to ∞) corresponds to the strength of the pole or zero at that frequency
 
 
 ##### Set up filter order
