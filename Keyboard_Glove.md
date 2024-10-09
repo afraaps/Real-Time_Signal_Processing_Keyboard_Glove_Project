@@ -263,11 +263,7 @@
 ###### _dpk_ and _pk_ are max and min values for the sensor data, respectively. For more complex hand gestures, set up more ranges of motions/data for each finger/sensor and correlate the filtering effects to them. As this repository is focused on the signal processing aspects the min and max is all that will be used here. 
         pk = str('0')
         dpk = str('4095')
-***        
-###### Used to see if the first value in the string will be a 0 or 4 that is send to, based on min and max values of the sensor. Also useful for troubleshooting and calibrating the sensors to your audio.
-        nsound = [[b'4']] 
-        sound = [[b'0']]
- ***       
+***             
         one = np.chararray((2, 1))
         one[:] = '-1'
         
@@ -457,7 +453,7 @@
             x4[0] = 0.0
             x5[0] = 0.0
             
-####   Steams out audio.
+#### Steams out audio.
             if change == 0:
                 binary_data = struct.pack('h' * BLOCKLEN, *y)
                 stream.write(binary_data, BLOCKLEN)   
@@ -478,8 +474,9 @@
                 binary_data = struct.pack('h' * BLOCKLEN, *y_5)
                 stream.write(binary_data, BLOCKLEN)
         
-##### Update sensor input values in this section (depending on your wifi protocol) at the end of the while loop.   
-        
+###### Update sensor input values in this section (depending on your wifi protocol) at the end of the while loop.   
+***  
+### Ends audio output when you quit with GUI.
         stream.stop_stream()
         stream.close()
         p.terminate()
