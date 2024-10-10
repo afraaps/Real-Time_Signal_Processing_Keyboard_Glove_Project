@@ -336,8 +336,8 @@
             if line2 == dpk:
                 x2[0] = 10000.0
                 print("Ring")
-                x += x2
-        
+                x += x2         # To play account for mulitple keys being played simultaniously everything is stored in x and then the filter is applied to this.
+
             if change == 0:
                 a = a2
                 b = b2
@@ -362,7 +362,7 @@
             if line3 == dpk:
                 x3[0] = 10000.0
                 print("Middle")
-                x += x3
+                x += x3        # To play account for mulitple keys being played simultaniously everything is stored in x and then the filter is applied to this.
         
             if change == 0:
                 a = a3
@@ -387,7 +387,7 @@
             if line4 == dpk:
                 x4[0] = 10000.0
                 print("Index")
-                x += x4  
+                x += x4        # To play account for mulitple keys being played simultaniously everything is stored in x and then the filter is applied to this.
                 
             if change == 0:
                 a = a4
@@ -412,7 +412,7 @@
             if line5 != pk:
                 x5[0] = 10000.0
                 print("Thump")
-                x += x5
+                x += x5        # To play account for mulitple keys being played simultaniously everything is stored in x and then the filter is applied to this.
         
             if change == 0:
                 a = a5
@@ -433,8 +433,9 @@
             if change == 4:
                 a_5 = a5_5
                 b_5 = b5_5
-***        
-### Apply filter to signal here. Second order IIR filter.
+*** 
+### Various sets of filter coefficients choosen based on user input.
+###### Apply filter to signal here. Second order IIR filter.
             [y, states] = signal.lfilter(b, a, x, zi = states)
 ###### Filters data in a manner similar to a bandpass filter.
             y = np.clip(y.astype(int), -MAXVALUE, MAXVALUE)        
@@ -451,7 +452,7 @@
             [y_5, states] = signal.lfilter(b_5, a_5, x, zi = states)
             y_5 = np.clip(y.astype(int), -MAXVALUE, MAXVALUE)   
 ***
-###### Resets the values from sensor input here.
+###### Resets the values from sensor input here to disregard previous sensor inputs.
             x[0] = 0.0
             x2[0] = 0.0
             x3[0] = 0.0
@@ -479,9 +480,34 @@
                 binary_data = struct.pack('h' * BLOCKLEN, *y_5)
                 stream.write(binary_data, BLOCKLEN)
         
-###### Update sensor input values in this section (depending on your wifi protocol) at the end of the while loop.   
+###### Update sensor input values in this section (depending on your WIFI protocol) at the end of the while loop.   
+##### Updates sensor input values based on my WIFI protocol.
+            if line:
+                #print(" line")
+                #print( line)
+                one[i] =  line
+        
+            if line2:
+                #print("line2")
+                #print(line2)
+                two[i] =  line2
+        
+            if line3:
+                #print("line3")
+                #print(line3)
+                three[i] = line3
+        
+            if line4:
+                #print("line4")
+                #print(line4)
+                four[i] = line4
+        
+            if line5:
+                #print("line5")
+                #print(line5)
+                five[i] =  line5
 ***  
-### Ends audio output when you quit with GUI.
+### Ends audio output when you quit with GUI (section is written after/outside the while loop).
         stream.stop_stream()
         stream.close()
         p.terminate()
